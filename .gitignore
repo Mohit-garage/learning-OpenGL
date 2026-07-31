@@ -1,0 +1,26 @@
+# Visual Studio temporary/workspace files
+.vs/
+*.user
+
+# Build outputs (Executables and Binaries)
+x64/
+x86/
+Debug/
+Release/
+bin/
+bin-int/
+
+# Intermediate build files
+*.obj
+*.ilk
+*.pdb
+*.idb
+*.tlog
+*.lastbuildstate
+*.log
+*.iobj
+*.ipdb
+
+# OS generated files
+.DS_Store
+Thumbs.db
