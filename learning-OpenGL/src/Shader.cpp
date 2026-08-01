@@ -8,17 +8,21 @@ void Check_Window_Close(GLFWwindow* window);
 //Vertex Shader
 const char* vertexShaderSource = "#version 460 core\n"
 "layout (location = 0) in vec3 aPos;\n"
+"layout (location = 1) in vec3 aCol;\n"
+"out vec3 ourColor;\n"
 "void main()\n"
 "{\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"   gl_Position = vec4(aPos, 1.0);\n"
+"   ourColor = aCol;\n"
 "}\0";
 
 //Fragment Shader
 const char* fragShaderSource = "#version 460 core\n"
+"in vec3 ourColor;\n"
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
+"   FragColor = vec4(ourColor, 1.0f);\n"
 "}\0";
 
 int main(void)
@@ -106,15 +110,11 @@ int main(void)
     //Defining Triangle Coordinates
     float Vertex[] =
     {
-        //first Triangle
-        -0.5f, -0.5f, 0.0f, // first point
-        0.5f, -0.5f, 0.0f,  // second point
-        -0.75f, 0.5f, 0.0f, // third point
-
-        //second Triangle
-        0.25f, 0.5f, 0.0f,  // first point
-        -0.75f, 0.5f, 0.0f, // second point
-        0.5f, -0.5f, 0.0f   // third point
+        //Triangle
+        //coordinates            //color
+        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,  // first point
+        0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 0.0f,  // second point
+        0.0f, 0.5f, 0.0f,       0.0f, 0.0f, 1.0f  // third point
     };
 
     // created buffer and array and allocated memory on gpu
@@ -126,20 +126,11 @@ int main(void)
     glBindBuffer(GL_ARRAY_BUFFER, VBO1);
     glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex), Vertex, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-
-    unsigned int VAO2, VBO2;
-    glGenVertexArrays(1, &VAO2);
-    glGenBuffers(1, &VBO2);
-
-    glBindVertexArray(VAO2);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex), Vertex, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
 
 
@@ -151,14 +142,16 @@ int main(void)
         /* Render here */
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
         glUseProgram(shaderProgram);
+
+        //Uniform Variable (removed from shader: reedit if running)
+        /*int current_time = glfwGetTime();
+        float gradiant_value = sin(current_time) / 2.0f + 0.5f;
+        int uniform_location = glGetUniformLocation(shaderProgram, "FragmentColor");
+        glUniform4f(uniform_location, 0.0f, 0.0f, gradiant_value, 1.0f);*/
+
         glBindVertexArray(VAO1);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        glBindVertexArray(0);
-
-        glBindVertexArray(VAO2);
-        glDrawArrays(GL_TRIANGLES, 3, 3);
         glBindVertexArray(0);
 
 
