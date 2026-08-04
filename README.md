@@ -7,8 +7,8 @@ A repository dedicated to learning modern OpenGL (Core Profile) and low-level gr
 Following the [LearnOpenGL](https://learnopengl.com/) curriculum to build a strong systems foundation.
 
 - [x] **01. Hello Triangle:** Environment setup, GLAD/GLFW integration, VBOs/VAOs, and shader compilation.
-- [ ] **02. Shaders:** Uniforms, vertex/fragment shader data passing.
-- [ ] **03. Textures:** Loading 2D image data, texture wrapping, and filtering.
+- [x] **02. Shaders:** Uniforms, vertex/fragment shader data passing.
+- [x] **03. Textures:** Loading 2D image data, texture wrapping, and filtering.
 - [ ] **04. Transformations:** Matrix math, translations, rotations, and scaling.
 - [ ] **05. Camera:** Model-View-Projection matrices and 3D space navigation.
 
@@ -24,4 +24,4 @@ This project includes all necessary dependencies (GLFW, GLAD) directly in the re
 
 1. Clone the repository: 
    ```bash
-   git clone [https://github.com/Mohit-garage/your-repo-name.git](https://github.com/Mohit-garage/your-repo-name.git)
+   git clone [https://github.com/Mohit-garage/learning-OpenGL.git](https://github.com/Mohit-garage/learning-OpenGL.git)
