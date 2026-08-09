@@ -9,5 +9,5 @@ uniform float contrast;
 
 void main()
 {
-       FragColor = mix(texture(texture1, TexCoord), texture(texture2, TexCoord), contrast);
+       FragColor = mix(texture(texture1, TexCoord), texture(texture2, TexCoord), contrast) * vec4(ourColor, 1.0f);
 }
