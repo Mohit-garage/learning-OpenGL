@@ -3,6 +3,7 @@
 #define SHADER_H
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 
 #include<string>
 #include<fstream>
@@ -94,17 +95,29 @@ public:
 	{
 		glUniform1f(glGetUniformLocation(ID, name), val);
 	}
-	void setvec4(const char* name, float x, float y, float z, float w)
+	void setvec4(const char* name, glm::vec4 &value)
 	{
-		glUniform4f(glGetUniformLocation(ID, name), x, y, z, w);
+		glUniform4fv(glGetUniformLocation(ID, name), 1, &value[0]);
 	}
-	void setvec3(const char* name, float x, float y, float z)
+	void setvec3(const char* name, glm::vec3& value)
 	{
-		glUniform3f(glGetUniformLocation(ID, name), x, y, z);
+		glUniform3fv(glGetUniformLocation(ID, name), 1, &value[0]);
 	}
-	void setvec2(const char* name, float x, float y)
+	void setvec2(const char* name, glm::vec2& value)
 	{
-		glUniform2f(glGetUniformLocation(ID, name), x, y);
+		glUniform2fv(glGetUniformLocation(ID, name), 1, &value[0]);
+	}
+	void setMat4(const char* name, glm::mat4 &matrix)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(ID, name), 1, GL_FALSE, &matrix[0][0]);
+	}
+	void setMat3(const char* name, glm::mat3& matrix)
+	{
+		glUniformMatrix3fv(glGetUniformLocation(ID, name), 1, GL_FALSE, &matrix[0][0]);
+	}
+	void setMat2(const char* name, glm::mat2& matrix)
+	{
+		glUniformMatrix2fv(glGetUniformLocation(ID, name), 1, GL_FALSE, &matrix[0][0]);
 	}
 	
 private:
