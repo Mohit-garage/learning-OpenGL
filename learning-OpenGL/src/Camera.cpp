@@ -9,12 +9,32 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Camera.h"
+
+
+/***************************funciton prototypes*******************************/
 // function for get relative paths.
 static std::string getRelativePath(const std::string& relativePath);
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void processCursorInput(GLFWwindow* window, double xpos, double ypos);
+void processScrollInput(GLFWwindow* window, double xoffset, double yoffset);
+void processInput(GLFWwindow* window);
 void Check_Window_Close(GLFWwindow* window);
 void contrastControl(GLFWwindow*, float&);
+/******************************************************************************/
+
+const unsigned int ScrWidth = 800;
+const unsigned int ScrHeight = 600;
+
+//Setting up Camera
+camera ourCamera(glm::vec3(0.0f, 0.0f, 3.0f));
+float lastX = ScrWidth / 2.0f;
+float lastY = ScrHeight / 2.0f;
+bool firstMouse = true;
+
+//timing
+float deltaTime = 0.0f;
+float lastTime = 0.0f;
 
 int main(void)
 {
@@ -25,7 +45,7 @@ int main(void)
         return -1;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(800, 600, "Coordinates", NULL, NULL);
+    window = glfwCreateWindow(ScrWidth, ScrHeight, "Camera", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -34,6 +54,12 @@ int main(void)
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
+    
+    //callback functions
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, processCursorInput);
+    glfwSetScrollCallback(window, processScrollInput);
+
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -41,8 +67,6 @@ int main(void)
         return -1;
     }
 
-    Shader ourShader("Shader.vert", "Shader.frag");
-    //Defining Triangle Coordinates
     float vertices[] = {
     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
      0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
@@ -98,6 +122,10 @@ int main(void)
     glm::vec3(1.5f,  0.2f, -1.5f),
     glm::vec3(-1.3f,  1.0f, -1.5f)
     };
+    
+    /***************************Shader & Textures*********************************************/
+    Shader ourShader("Shader.vert", "Shader.frag");
+    //Defining Triangle Coordinates
 
     // created buffer and array and allocated memory on gpu
     unsigned int VAO1, VBO1;
@@ -168,16 +196,19 @@ int main(void)
 
     //Enabling depth testing
     glEnable(GL_DEPTH_TEST);
+    /******************************************************************************/
 
-    //setting up projection Matrix
-    glm::mat4 projection = glm::mat4(1.0f);
-    projection = glm::perspective(glm::radians(53.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-    ourShader.setMat4("projection", projection);
 
     /* Loop until the user closes the window */
+    /**********************************************************Game Loop******************************************************************************/
     while (!glfwWindowShouldClose(window))
     {
-        Check_Window_Close(window);
+        //Delta Time
+        float currentTime = static_cast<float>(glfwGetTime());
+        deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
+
+        processInput(window);
         contrastControl(window, value);
 
         /* Render here */
@@ -192,10 +223,13 @@ int main(void)
         ourShader.setfloat("contrast", value);
 
         // all Matrices
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(ourCamera.Zoom), 800.0f / 600.0f, 0.1f, 100.0f);
+        ourShader.setMat4("projection", projection);
+
+        glm::mat4 view = ourCamera.getViewMatrix();
         ourShader.setMat4("view", view);
-        
+
         glBindVertexArray(VAO1);
         for (int i = 0; i < 10; i++)
         {
@@ -224,6 +258,7 @@ int main(void)
     glfwTerminate();
     return 0;
 }
+/*********************************************************************************************************************************************************/
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -233,21 +268,73 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // for texture contrast control
 void contrastControl(GLFWwindow* window, float& value)
 {
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && value < 1)
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && value < 1)
     {
         value = value + 0.0001f;
     }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && value > 0)
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && value > 0)
     {
         value = value - 0.0001f;
     }
 }
-void Check_Window_Close(GLFWwindow* window)
+
+//Keyboard Input
+void processInput(GLFWwindow* window)
 {
-    if ((glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) && (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS))
+    if ((glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS))
     {
         glfwSetWindowShouldClose(window, true);
     }
+    if ((glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS))
+    {
+        ourCamera.processKeyboardInput(Forward, deltaTime);
+    }
+    if ((glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS))
+    {
+        ourCamera.processKeyboardInput(Backward, deltaTime);
+    }
+    if ((glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS))
+    {
+        ourCamera.processKeyboardInput(Left, deltaTime);
+    }
+    if ((glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS))
+    {
+        ourCamera.processKeyboardInput(Right, deltaTime);
+    }
+    if ((glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS))
+    {
+        ourCamera.processKeyboardInput(Up, deltaTime);
+    }
+    if ((glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS))
+    {
+        ourCamera.processKeyboardInput(Down, deltaTime);
+    }
+}
+
+//Cursor Position Input
+void processCursorInput(GLFWwindow* window, double xpos, double ypos)
+{
+    float curX = static_cast<float>(xpos);
+    float curY = static_cast<float>(ypos);
+
+    if (firstMouse)
+    {
+        lastX = curX;
+        lastY = curY;
+        firstMouse = false;
+    }
+
+    float xoffset = curX - lastX;
+    float yoffset = lastY - curY;
+
+    ourCamera.processMouseInput(xoffset, yoffset);
+
+    lastX = curX;
+    lastY = curY;
+}
+void processScrollInput(GLFWwindow* window, double xoffset, double yoffset)
+{
+    ourCamera.processMouseScrollInput(static_cast<float>(yoffset));
 }
 
 //creating a relative path finder upto 3 folder back to current working directory

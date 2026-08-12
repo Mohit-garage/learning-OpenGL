@@ -9,8 +9,11 @@ Following the [LearnOpenGL](https://learnopengl.com/) curriculum to build a stro
 - [x] **01. Hello Triangle:** Environment setup, GLAD/GLFW integration, VBOs/VAOs, and shader compilation.
 - [x] **02. Shaders:** Uniforms, vertex/fragment shader data passing.
 - [x] **03. Textures:** Loading 2D image data, texture wrapping, and filtering.
-- [ ] **04. Transformations:** Matrix math, translations, rotations, and scaling.
-- [ ] **05. Camera:** Model-View-Projection matrices and 3D space navigation.
+- [x] **04. Transformations:** Matrix math, translations, rotations, and scaling.
+- [x] **05. Camera:** Model-View-Projection matrices and 3D space navigation.
+
+Completed the Basics
+- [x] **READY FOR THE FIRST GAME.
 
 # Tech Stack
 * **Language:** C++17
