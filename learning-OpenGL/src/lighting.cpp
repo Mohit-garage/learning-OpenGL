@@ -229,6 +229,7 @@ int main(void)
     ourShader.setint("texture1", 0);
     ourShader.setvec3("lightColor", lightColor);
     ourShader.setvec3("lightPos", lightPos);
+    ourShader.setvec3("viewPos", ourCamera.cameraPosition);
     float ambientStrength = 0.1f;
     ourShader.setfloat("ambientStrength", ambientStrength);
 
@@ -249,7 +250,7 @@ int main(void)
         processInput(window);
 
         /* Render here */
-        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        //glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glActiveTexture(GL_TEXTURE0);
@@ -276,7 +277,7 @@ int main(void)
         glBindVertexArray(VAO1);
         ourShader.setMat4("view", view);
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, { 1.5f, 2.0f, 4.0f });
+        model = glm::translate(model, { 3.0f, -1.0f, 2.0f });
         ourShader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
