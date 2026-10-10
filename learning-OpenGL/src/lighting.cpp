@@ -209,7 +209,7 @@ int main(void)
     unsigned char* data = stbi_load(texturePath.c_str(), &width, &height, &nrChannels, 0);
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glad_glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
@@ -277,8 +277,12 @@ int main(void)
         glBindVertexArray(VAO1);
         ourShader.setMat4("view", view);
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, { 3.0f, -1.0f, 2.0f });
+        model = glm::translate(model, { 4.0f, 2.0f, -1.0f });
         ourShader.setMat4("model", model);
+
+        glm::mat3 NormalMatrix = glm::mat4(1.0f);
+        NormalMatrix = glm::mat3(glm::transpose(glm::inverse(model)));
+        ourShader.setMat3("NormalMatrix", NormalMatrix);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glBindVertexArray(0);

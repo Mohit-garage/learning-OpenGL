@@ -54,9 +54,9 @@ public:
 		if (direction == Backward)
 			cameraPosition -= cameraFront * velocity;
 		if (direction == Right)
-			cameraPosition -= cameraRight * velocity;
-		if (direction == Left)
 			cameraPosition += cameraRight * velocity;
+		if (direction == Left)
+			cameraPosition -= cameraRight * velocity;
 		if (direction == Up)
 			cameraPosition += cameraUp * velocity;
 		if (direction == Down)
@@ -74,7 +74,10 @@ public:
 				Pitch = -89.0f;
 			if (Pitch > 89.0f)
 				Pitch = 89.0f;
-
+			if (Yaw < -89.0f)
+				Yaw = -89.0f;
+			if (Yaw > 89.0f)
+				Yaw = 89.0f;
 		}
 
 		UpdateCameraParameters();
@@ -97,8 +100,8 @@ private:
 		cameraFront.z = cos(Pitch) * sin(Yaw);
 		cameraFront = glm::normalize(cameraFront);
 
-		cameraRight = glm::normalize(glm::cross(WorldUp, cameraFront));
-		cameraUp = glm::normalize(glm::cross(cameraFront, cameraRight));
+		cameraRight = glm::normalize(glm::cross(cameraFront, WorldUp));
+		cameraUp = glm::normalize(glm::cross(cameraRight, cameraFront));
 	}
 	
 	glm::mat4 view;
